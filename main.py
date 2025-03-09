@@ -439,7 +439,7 @@ async def upload_pipeline(
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Perform any necessary reload or processing
+        # Perform any necessary reload or manage
         await reload()
 
         return {

@@ -48,7 +48,7 @@ tokenizers
 nltk
 tiktoken
 
-# Image processing
+# Image manage
 Pillow
 opencv-python
 

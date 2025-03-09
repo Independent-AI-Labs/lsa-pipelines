@@ -4,7 +4,7 @@ author: Andrew Tait Gehrhardt
 date: 2024-06-18
 version: 1.0
 license: MIT
-description: A pipeline for dynamically processing images when current model is a text only model
+description: A pipeline for dynamically manage images when current model is a text only model
 requirements: pydantic, aiohttp
 """
 

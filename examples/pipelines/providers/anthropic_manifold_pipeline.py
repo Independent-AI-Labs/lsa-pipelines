@@ -4,7 +4,7 @@ author: justinh-rahb, sriparashiva
 date: 2024-06-20
 version: 1.4
 license: MIT
-description: A pipeline for generating text and processing images using the Anthropic API.
+description: A pipeline for generating text and manage images using the Anthropic API.
 requirements: requests, sseclient-py
 environment_variables: ANTHROPIC_API_KEY
 """

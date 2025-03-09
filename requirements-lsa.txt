@@ -1,0 +1,4 @@
+selenium~=4.29.0
+pytest~=8.3.5
+psutil~=7.0.0
+chardet~=5.2.0

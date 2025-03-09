@@ -4,7 +4,7 @@ author: G-mario
 date: 2024-08-18
 version: 1.0
 license: MIT
-description: A pipeline for generating text and processing images using the AWS Bedrock API(By Anthropic claude).
+description: A pipeline for generating text and manage images using the AWS Bedrock API(By Anthropic claude).
 requirements: requests, boto3
 environment_variables: AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION_NAME
 """

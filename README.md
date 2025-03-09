@@ -90,7 +90,7 @@ Get started with Pipelines in a few easy steps:
 3. **Install the required dependencies:**
 
    ```sh
-   pip install -r requirements.txt
+   pip install -r requirements-hype.txt
    ```
 
 4. **Start the Pipelines server:**

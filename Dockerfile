@@ -36,7 +36,7 @@ RUN if [ "$MINIMUM_BUILD" != "true" ]; then \
 RUN if [ "$MINIMUM_BUILD" = "true" ]; then \
         uv pip install --system -r requirements-minimum.txt --no-cache-dir; \
     else \
-        uv pip install --system -r requirements.txt --no-cache-dir; \
+        uv pip install --system -r requirements-hype.txt --no-cache-dir; \
     fi
 
 # Copy the application code
