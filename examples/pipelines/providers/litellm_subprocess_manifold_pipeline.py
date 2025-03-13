@@ -68,7 +68,7 @@ class Pipeline:
                 f"Config file not found. Created a default config file at {self.valves.LITELLM_CONFIG_DIR}"
             )
 
-        with open(self.valves.LITELLM_CONFIG_DIR, "r") as file:
+        with open(self.valves.LITELLM_CONFIG_DIR, "r", 'utf-8') as file:
             litellm_config = yaml.safe_load(file)
 
         self.valves.litellm_config = litellm_config
@@ -87,7 +87,7 @@ class Pipeline:
 
         print(f"on_valves_updated:{__name__}")
 
-        with open(self.valves.LITELLM_CONFIG_DIR, "r") as file:
+        with open(self.valves.LITELLM_CONFIG_DIR, "r", 'utf-8') as file:
             litellm_config = yaml.safe_load(file)
 
         self.valves.litellm_config = litellm_config
