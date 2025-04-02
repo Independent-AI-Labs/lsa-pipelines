@@ -1,5 +1,5 @@
 """
-Prompt templates for the GitHub Project Manager.
+Updated prompt templates for the GitHub Project Manager.
 """
 from integration.github.models.project_models import ActionType
 from integration.pipelines.pipelines.github_pm_pipeline_impl.data.pm_constants import (
@@ -28,15 +28,73 @@ For deciding to reply to the user:
 
 For deciding to get project information:
 ►{ActionType.GET_PROJECT_INFO.value}◄
-owner: {GITHUB_USER}
-project_number: 1
+```json
+{{
+  "owner": "{GITHUB_USER}",
+  "project_number": 1
+}}
+```
 
 For deciding to add an item to a project:
 ►{ActionType.ADD_ITEM_TO_PROJECT.value}◄
-project_id: PVT_123abc
-content_id: I_123abc
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "content_id": "%CONTENT_ID%"
+}}
+```
 
-Remember that all data must be simple and delimited correctly.
+For getting project information to update Category field:
+►{ActionType.GET_PROJECT_FIELDS.value}◄
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "field_name": "Category"
+}}
+```
+
+For updating a select field:
+►{ActionType.UPDATE_SELECT_FIELD.value}◄
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_id": "%ITEM_ID%",
+  "field_id": "%FIELD_ID%",
+  "option_id": "%OPTION_ID%"
+}}
+```
+
+Remember that all data must be in valid JSON format. Use placeholders with % symbols when you're referring to IDs that need to be resolved.
+"""
+
+# Context analysis prompt
+CONTEXT_ANALYSIS_PROMPT = """
+Analyze the following conversation history and current message to identify GitHub entities, 
+projects, repositories, and other context. Extract specific names, numbers, and IDs.
+
+Conversation history:
+{conversation_history}
+
+Current message:
+{current_message}
+
+Extract the following information if present:
+- Entity: [user or organization name]
+- Entity type: [User or Organization]
+- Project ID: [if mentioned]
+- Project number: [if mentioned]
+- Project title: [if mentioned]
+- Repository: [repo name]
+- Repository owner: [owner name]
+- Field: [field name such as Status, Category, Type]
+- Field type: [text, select, etc.]
+- Selected option: [option value]
+- Issue types: [comma-separated list]
+- Statuses: [comma-separated list]
+- Categories: [comma-separated list]
+- Labels: [comma-separated list]
+
+Format your response in a simple key-value format, one per line. Only include information you can confidently extract.
 """
 
 # Action descriptions for prompting
@@ -65,104 +123,180 @@ ACTION_DESCRIPTIONS = {
 ACTION_EXAMPLES = {
     ActionType.REPLY_TO_USER: f"""
 ►{ActionType.REPLY_TO_USER.value}◄
+```json
+{{
+  "response": "Here's the information you requested about your projects."
+}}
+```
 """,
     ActionType.GET_PROJECT_INFO: f"""
 ►{ActionType.GET_PROJECT_INFO.value}◄
-owner: {GITHUB_ORG}
-project_number: 5
+```json
+{{
+  "owner": "{GITHUB_ORG}",
+  "project_number": 5
+}}
+```
 """,
     ActionType.GET_USER_PROJECTS: f"""
 ►{ActionType.GET_USER_PROJECTS.value}◄
-username: {GITHUB_USER}
+```json
+{{
+  "username": "{GITHUB_USER}"
+}}
+```
 """,
     ActionType.GET_ORG_PROJECTS: f"""
 ►{ActionType.GET_ORG_PROJECTS.value}◄
-org_name: {GITHUB_ORG}
+```json
+{{
+  "org_name": "{GITHUB_ORG}"
+}}
+```
 """,
     ActionType.GET_PROJECT_FIELDS: f"""
 ►{ActionType.GET_PROJECT_FIELDS.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "field_name": "Category"
+}}
+```
 """,
     ActionType.GET_PROJECT_ITEMS: f"""
 ►{ActionType.GET_PROJECT_ITEMS.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_title": "Business Plan"
+}}
+```
 """,
     ActionType.ADD_ITEM_TO_PROJECT: f"""
 ►{ActionType.ADD_ITEM_TO_PROJECT.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-content_id: I_kwDOA1rXnM5QdJxX
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "content_id": "%CONTENT_ID%"
+}}
+```
 """,
     ActionType.ADD_DRAFT_ISSUE: f"""
 ►{ActionType.ADD_DRAFT_ISSUE.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-title: Fix navigation bug
-body: The navigation menu is not working correctly on mobile.
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "title": "Fix navigation bug",
+  "body": "The navigation menu is not working correctly on mobile.",
+  "category": "SOLUTIONS"
+}}
+```
 """,
     ActionType.UPDATE_PROJECT_SETTINGS: f"""
 ►{ActionType.UPDATE_PROJECT_SETTINGS.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-title: New Project Title
-public: true
-short_description: Updated project description
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "title": "New Project Title",
+  "public": true,
+  "short_description": "Updated project description"
+}}
+```
 """,
     ActionType.UPDATE_TEXT_FIELD: f"""
 ►{ActionType.UPDATE_TEXT_FIELD.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-item_id: PVTI_lADOAKGca84AHnE7zX0S
-field_id: PVTF_lADOAKGca84AHnE7zF8r
-text_value: Updated text value
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_id": "%ITEM_ID%",
+  "field_id": "%FIELD_ID%",
+  "text_value": "Updated text value"
+}}
+```
 """,
     ActionType.UPDATE_SELECT_FIELD: f"""
 ►{ActionType.UPDATE_SELECT_FIELD.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-item_id: PVTI_lADOAKGca84AHnE7zX0S
-field_id: PVTF_lADOAKGca84AHnE7zF8r
-option_id: 47fb27da
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_id": "%ITEM_ID%",
+  "field_id": "%FIELD_ID%",
+  "option_id": "%OPTION_ID%"
+}}
+```
 """,
     ActionType.UPDATE_ITERATION_FIELD: f"""
 ►{ActionType.UPDATE_ITERATION_FIELD.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-item_id: PVTI_lADOAKGca84AHnE7zX0S
-field_id: PVTF_lADOAKGca84AHnE7zF8r
-iteration_id: 47fb27da
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_id": "%ITEM_ID%",
+  "field_id": "%FIELD_ID%",
+  "iteration_id": "%ITERATION_ID%"
+}}
+```
 """,
     ActionType.DELETE_PROJECT_ITEM: f"""
 ►{ActionType.DELETE_PROJECT_ITEM.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-item_id: PVTI_lADOAKGca84AHnE7zX0S
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "item_id": "%ITEM_ID%"
+}}
+```
 """,
     ActionType.CREATE_PROJECT: f"""
 ►{ActionType.CREATE_PROJECT.value}◄
-owner_id: MDQ6VXNlcjU4MzIzMQ==
-title: New Development Roadmap
+```json
+{{
+  "owner_id": "%OWNER_ID%",
+  "title": "New Development Roadmap"
+}}
+```
 """,
     ActionType.CONVERT_DRAFT_TO_ISSUE: f"""
 ►{ActionType.CONVERT_DRAFT_TO_ISSUE.value}◄
-project_id: PVT_kwDOAKGca84AHnE7
-draft_item_id: PVTI_lADOAKGca84AHnE7zX0S
-owner: {GITHUB_USER}
-repo: {TEST_REPOSITORY}
-labels: bug,enhancement
+```json
+{{
+  "project_id": "%PROJECT_ID%",
+  "draft_item_id": "%ITEM_ID%",
+  "owner": "{GITHUB_USER}",
+  "repo": "{TEST_REPOSITORY}",
+  "labels": ["bug", "enhancement"]
+}}
+```
 """,
     ActionType.ADD_COMMENT_TO_ISSUE: f"""
 ►{ActionType.ADD_COMMENT_TO_ISSUE.value}◄
-owner: {GITHUB_USER}
-repo: {TEST_REPOSITORY}
-issue_number: 42
-body: This is a comment added via the API
+```json
+{{
+  "owner": "{GITHUB_USER}",
+  "repo": "{TEST_REPOSITORY}",
+  "issue_number": 42,
+  "body": "This is a comment added via the API"
+}}
+```
 """,
     ActionType.CREATE_ISSUE: f"""
 ►{ActionType.CREATE_ISSUE.value}◄
-owner: {GITHUB_USER}
-repo: {TEST_REPOSITORY}
-title: New issue title
-body: Issue description
-labels: bug,feature
+```json
+{{
+  "owner": "{GITHUB_USER}",
+  "repo": "{TEST_REPOSITORY}",
+  "title": "New issue title",
+  "body": "Issue description",
+  "labels": ["bug", "feature"]
+}}
+```
 """,
     ActionType.GET_REPOSITORY_ID: f"""
 ►{ActionType.GET_REPOSITORY_ID.value}◄
-owner: {GITHUB_USER}
-repo: {TEST_REPOSITORY}
+```json
+{{
+  "owner": "{GITHUB_USER}",
+  "repo": "{TEST_REPOSITORY}"
+}}
+```
 """
 }
 
@@ -178,47 +312,68 @@ def generate_action_list():
 
 
 # Prompt template for deciding on an action
-ACTION_DECISION_PROMPT = f"""
-Based on the following conversation history and the current message, decide which action to take next.
+ACTION_DECISION_PROMPT = """
+Based on the following conversation history, current message, and context information, decide which action to take next.
 
 Conversation history:
-{{conversation_history}}
+{conversation_history}
 
 Current message:
-{{current_message}}
+{current_message}
 
-Analyze the user's intent carefully. If the user is asking about GitHub Projects, you should decide whether to:
+{context_info}
 
-{generate_action_list()}
+Analyze the user's intent carefully. Consider any project-specific custom fields, issue types, statuses, and categories from the context.
+
+If the context indicates custom project fields:
+- Use those field names and options when planning your action
+- Refer to the available options for select fields
+- Remember that each project may have different configurations
+
+If the user is asking about GitHub Projects, you should decide which action to take next.
 
 Determine the most appropriate action and output ONLY the action type with its parameters using the format shown above.
+Always use JSON format for parameters inside code blocks.
+Use proper placeholders (e.g., %PROJECT_ID%, %FIELD_ID%, %ITEM_ID%) for values that need to be resolved later.
 """
 
 # Prompt template for analyzing action results
-RESULT_ANALYSIS_PROMPT = f"""
+RESULT_ANALYSIS_PROMPT = """
 Analyze the results of the action that was just executed to determine the next action.
 
 Action executed:
-Type: {{action_type}}
-Parameters: {{action_parameters}}
+Type: {action_type}
+Parameters: {action_parameters}
 
 Result:
-Success: {{result_success}}
-Data: {{result_data}}
-Message: {{result_message}}
+Success: {result_success}
+Data: {result_data}
+Message: {result_message}
+
+Context Information:
+{context_info}
 
 Previous actions:
-{{action_history}}
+{action_history}
 
-Based on this information, decide what to do next. You can:
+Conversation History:
+{conversation_history}
 
-1. Reply to the user if you have all the information needed: ►{ActionType.REPLY_TO_USER.value}◄
+Consider all project-specific custom fields, issue types, statuses, and categories from the context when deciding the next action.
+
+Based on this information, decide what to do next. You have two options:
+
+1. Reply to the user if you have all the information needed:
+►REPLY_TO_USER◄
+```json
+{
+  "response": "Your detailed response here"
+}
+```
 
 2. Take another action if you need more information or need to perform additional operations.
 
-Choose from the following available actions:
-
-{generate_action_list()}
+If you believe we should stop the action chain and provide a direct response to the user, include the text "STOP_ACTION_CHAIN" in your response.
 
 Determine the most appropriate next action and output ONLY the action type with its parameters using the format shown above.
 """
@@ -233,6 +388,9 @@ Conversation history:
 Actions executed:
 {action_history}
 
+Context Information:
+{context_info}
+
 Your response should:
 1. Be clear and concise
 2. Use Markdown for formatting where appropriate
@@ -240,6 +398,8 @@ Your response should:
 4. Include relevant information from the action results
 5. Answer the user's original question or fulfill their request
 6. Be conversational and helpful
+7. Include any field IDs, project IDs, or other technical information that might be helpful for future requests
+8. Reference project-specific custom fields, issue types, statuses, and categories when relevant
 
 Generate a complete response that the user will see.
 """
@@ -332,7 +492,11 @@ PARAMETER_DESCRIPTIONS = {
     "draft_item_id": "the ID of the draft item to convert",
     "repo": "the repository name",
     "issue_number": "the issue number",
-    "labels": "comma-separated list of labels to apply"
+    "labels": "comma-separated list of labels to apply",
+    "field_name": "the name of the field",
+    "item_title": "the title of the item",
+    "selected_option_name": "the name of the option to select",
+    "category": "the category to assign"
 }
 
 # Error messages for user-friendly responses
@@ -399,6 +563,11 @@ ERROR_MESSAGES = {
         "Make sure the repository name and owner are correct.",
         "Check if you have write access to the repository.",
         "Ensure the issue title and body are properly formatted."
+    ],
+    f"{ActionType.UPDATE_SELECT_FIELD.value}_SUGGESTIONS": [
+        "Make sure all the IDs (project, item, field, option) are correct.",
+        "Check if the field is actually a select field.",
+        "Ensure the option ID exists in this field's options."
     ],
     "DEFAULT_SUGGESTIONS": [
         "Make sure all parameters are correct.",
